@@ -6,36 +6,21 @@ const crypto = require('crypto');
 const app = express();
 const PORT = 3000;
 
-// Simple in-memory database
 let users = [];
 
-// Middleware
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// Utility functions
 const generateRandomBuffer = (size) => crypto.randomBytes(size);
 const generateChallenge = () => base64url(generateRandomBuffer(32));
 
 const base64ToBuffer = (base64) => Buffer.from(base64, 'base64');
-const bufferToBase64 = (buffer) => buffer.toString('base64');
 
-// Serve index.html
-app.get('/', (req, res) => {
+app.get('/', (_, res) => {
   res.sendFile(__dirname + '/public/index.html');
 });
 
-const winners = [];
 
-app.get('/winners', (req, res) => {
-  // pick 3 random winners from the users array
-  if (winners.filter(x => !!x).length === 0) {
-    winners.push(...users.sort(() => 0.5 - Math.random()).slice(0, 3));
-  }
-  res.json(winners.map(w => w.username));
-});
-
-// Handle registration request
 app.post('/register', (req, res) => {
   const { username } = req.body;
 
@@ -67,7 +52,6 @@ app.post('/register', (req, res) => {
   res.json(publicKeyCredentialCreationOptions);
 });
 
-// Handle registration response
 app.post('/register/verify', (req, res) => {
   const { username, attestation } = req.body;
 
@@ -93,7 +77,6 @@ app.post('/register/verify', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Handle login request
 app.post('/login', (req, res) => {
   const { username } = req.body;
 
@@ -117,7 +100,6 @@ app.post('/login', (req, res) => {
   res.json(publicKeyCredentialRequestOptions);
 });
 
-// Handle login response
 app.post('/login/verify', (req, res) => {
   const { username, assertion } = req.body;
 

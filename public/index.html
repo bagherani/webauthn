@@ -43,13 +43,13 @@
         .getElementById("register")
         .addEventListener("click", async () => {
           const username = document.getElementById("username").value;
-          if (!username) return alert("Username is required");
 
           const res = await fetch("/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username }),
           });
+
           const options = await res.json();
           options.challenge = base64ToArrayBuffer(options.challenge);
           options.user.id = base64ToArrayBuffer(options.user.id);
